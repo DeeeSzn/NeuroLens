@@ -1,0 +1,409 @@
+@import "tailwindcss";
+
+/* ════════════════════════════════════════════════════════════════════════
+   NeuroLens — "Cinematic neuro-lab" design system
+   Near-black canvas, layered depth, a violet→blue brand gradient and warm
+   activation accents echoing the cortical heatmap. Consumed as Tailwind
+   utilities (bg-surface, text-muted, border-line, font-display…).
+   ════════════════════════════════════════════════════════════════════════ */
+@theme {
+  /* Surfaces — deliberate steps, no ad-hoc hex in components */
+  --color-canvas: #060608;
+  --color-surface: #0c0c11;
+  --color-surface-2: #14141b;
+  --color-surface-3: #1c1c26;
+
+  /* Hairlines */
+  --color-line: #1e1e28;
+  --color-line-strong: #2c2c3a;
+
+  /* Type */
+  --color-ink: #f4f4f9;
+  --color-muted: #a0a0b0;
+  --color-dim: #66667a;
+
+  /* Brand accent + status */
+  --color-accent: #8b5cff;
+  --color-accent-soft: #4f8dff;
+  --color-ember: #ff8a3d; /* warm activation accent (echoes the hot colormap) */
+  --color-good: #34d399;
+  --color-warn: #fbbf24;
+  --color-bad: #f87171;
+
+  /* Motion */
+  --ease-out-quint: cubic-bezier(0.22, 1, 0.36, 1);
+  --ease-out: cubic-bezier(0.23, 1, 0.32, 1);
+  --ease-in-out-strong: cubic-bezier(0.77, 0, 0.175, 1);
+  --ease-spring: cubic-bezier(0.34, 1.56, 0.64, 1);
+
+  --font-display: var(--font-bricolage), "SF Pro Display", -apple-system,
+    BlinkMacSystemFont, "Segoe UI", sans-serif;
+  --font-sans: -apple-system, BlinkMacSystemFont, "SF Pro Text", "Segoe UI",
+    Inter, Roboto, "Helvetica Neue", Arial, sans-serif;
+  --font-mono: ui-monospace, "SF Mono", SFMono-Regular, Menlo, Consolas,
+    monospace;
+}
+
+/* ── Base ──────────────────────────────────────────────────────────────── */
+html {
+  color-scheme: dark;
+  -webkit-text-size-adjust: 100%;
+}
+
+body {
+  background-color: var(--color-canvas);
+  color: var(--color-ink);
+  font-family: var(--font-sans);
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+
+/* Numbers in data readouts should never shift width */
+.tnum {
+  font-variant-numeric: tabular-nums;
+}
+
+.font-display {
+  font-family: var(--font-display);
+  letter-spacing: -0.02em;
+}
+
+/* ── Focus: one consistent, high-contrast ring everywhere ──────────────── */
+:focus-visible {
+  outline: 2px solid var(--color-accent);
+  outline-offset: 2px;
+  border-radius: 4px;
+}
+:focus:not(:focus-visible) {
+  outline: none;
+}
+
+::selection {
+  background: color-mix(in oklab, var(--color-accent) 40%, transparent);
+}
+
+/* ── Scrollbars: thin, unobtrusive, matching the surface ───────────────── */
+* {
+  scrollbar-width: thin;
+  scrollbar-color: var(--color-line-strong) transparent;
+}
+*::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+*::-webkit-scrollbar-track {
+  background: transparent;
+}
+*::-webkit-scrollbar-thumb {
+  background-color: var(--color-line-strong);
+  border-radius: 9999px;
+  border: 3px solid transparent;
+  background-clip: content-box;
+}
+*::-webkit-scrollbar-thumb:hover {
+  background-color: #3d3d4d;
+}
+
+/* ════════════════════════════════════════════════════════════════════════
+   Atmosphere — animated aurora, radial vignette and film grain. Rendered
+   behind app chrome (see <Atmosphere/>), all pointer-events:none.
+   ════════════════════════════════════════════════════════════════════════ */
+.nl-atmosphere {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  overflow: hidden;
+  pointer-events: none;
+}
+.nl-aurora {
+  position: absolute;
+  border-radius: 9999px;
+  filter: blur(80px);
+  opacity: 0.5;
+  will-change: transform;
+}
+.nl-aurora--violet {
+  width: 46vw;
+  height: 46vw;
+  left: -8vw;
+  top: -12vw;
+  background: radial-gradient(
+    circle at 50% 50%,
+    color-mix(in oklab, var(--color-accent) 70%, transparent),
+    transparent 68%
+  );
+  animation: nl-drift-a 26s var(--ease-in-out-strong) infinite alternate;
+}
+.nl-aurora--blue {
+  width: 40vw;
+  height: 40vw;
+  right: -6vw;
+  top: 6vh;
+  background: radial-gradient(
+    circle at 50% 50%,
+    color-mix(in oklab, var(--color-accent-soft) 65%, transparent),
+    transparent 68%
+  );
+  animation: nl-drift-b 32s var(--ease-in-out-strong) infinite alternate;
+}
+.nl-aurora--ember {
+  width: 34vw;
+  height: 34vw;
+  left: 30vw;
+  bottom: -16vw;
+  opacity: 0.32;
+  background: radial-gradient(
+    circle at 50% 50%,
+    color-mix(in oklab, var(--color-ember) 60%, transparent),
+    transparent 66%
+  );
+  animation: nl-drift-c 38s var(--ease-in-out-strong) infinite alternate;
+}
+/* Radial vignette keeps the edges dark and the centre luminous */
+.nl-vignette {
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(
+    120% 90% at 50% 0%,
+    transparent 40%,
+    rgba(0, 0, 0, 0.55) 100%
+  );
+}
+/* Fine film grain — SVG fractal noise, tiled */
+.nl-grain {
+  position: absolute;
+  inset: 0;
+  opacity: 0.04;
+  mix-blend-mode: overlay;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+}
+
+/* ════════════════════════════════════════════════════════════════════════
+   Reusable surfaces & primitives
+   ════════════════════════════════════════════════════════════════════════ */
+
+/* Card — the raised surface used across panels. Subtle top-lit gradient +
+   hairline + inner highlight so it reads as glass, not a flat rectangle. */
+.nl-card {
+  position: relative;
+  background: linear-gradient(
+    180deg,
+    color-mix(in oklab, var(--color-surface-2) 60%, transparent),
+    var(--color-surface)
+  );
+  border: 1px solid var(--color-line);
+  border-radius: 16px;
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.04),
+    0 1px 2px rgba(0, 0, 0, 0.4);
+}
+.nl-card-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 14px 16px;
+  border-bottom: 1px solid var(--color-line);
+}
+
+/* Glass — translucent floating chrome (nav, controls, popovers) */
+.nl-glass {
+  background: color-mix(in oklab, var(--color-surface) 72%, transparent);
+  border: 1px solid color-mix(in oklab, var(--color-line-strong) 80%, transparent);
+  backdrop-filter: blur(16px) saturate(1.4);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.05),
+    0 8px 30px rgba(0, 0, 0, 0.35);
+}
+
+/* Gradient text — brand-clipped headline text */
+.nl-gradient-text {
+  background: linear-gradient(120deg, #8b5cff 0%, #4f8dff 55%, #38d0ff 100%);
+  background-size: 200% 100%;
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  animation: nl-pan 8s linear infinite;
+}
+.nl-gradient-text--ember {
+  background: linear-gradient(120deg, #ff5f6d 0%, #ff8a3d 50%, #ffcf6b 100%);
+  background-size: 200% 100%;
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+/* Primary button — brand gradient with a soft outer glow */
+.nl-btn-primary {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  border-radius: 9999px;
+  padding: 10px 20px;
+  font-weight: 600;
+  color: #fff;
+  background: linear-gradient(120deg, #8b5cff 0%, #4f8dff 55%, #38d0ff 100%);
+  background-size: 180% 100%;
+  box-shadow:
+    0 0 0 1px rgba(255, 255, 255, 0.08) inset,
+    0 8px 24px -6px color-mix(in oklab, var(--color-accent) 70%, transparent);
+  transition:
+    transform 0.18s var(--ease-out),
+    box-shadow 0.25s var(--ease-out),
+    background-position 0.5s var(--ease-out);
+}
+.nl-btn-primary:hover {
+  background-position: 100% 0;
+  box-shadow:
+    0 0 0 1px rgba(255, 255, 255, 0.12) inset,
+    0 12px 34px -6px color-mix(in oklab, var(--color-accent) 85%, transparent);
+}
+.nl-btn-primary:active {
+  transform: translateY(1px) scale(0.99);
+}
+.nl-btn-primary:disabled {
+  background: var(--color-surface-3);
+  color: var(--color-dim);
+  box-shadow: none;
+  cursor: not-allowed;
+}
+
+/* Ring glow — a soft gradient border halo revealed on hover / active */
+.nl-ring-glow::after {
+  content: "";
+  position: absolute;
+  inset: -1px;
+  border-radius: inherit;
+  padding: 1px;
+  background: linear-gradient(120deg, #8b5cff 0%, #4f8dff 55%, #38d0ff 100%);
+  -webkit-mask:
+    linear-gradient(#000 0 0) content-box,
+    linear-gradient(#000 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+  opacity: 0;
+  transition: opacity 0.3s var(--ease-out);
+}
+.nl-ring-glow:hover::after,
+.nl-ring-glow[data-active="true"]::after {
+  opacity: 1;
+}
+
+/* Brain canvas motion: a single, quiet reveal after WebGL has loaded. */
+.nl-brain-canvas {
+  display: block;
+  width: 100%;
+  height: 100%;
+  opacity: 0;
+  transform: scale(0.985);
+  transition:
+    opacity 0.42s var(--ease-out),
+    transform 0.6s var(--ease-out);
+  will-change: opacity, transform;
+}
+.nl-brain-canvas--ready {
+  opacity: 1;
+  transform: none;
+}
+
+/* ── Keyframes ─────────────────────────────────────────────────────────── */
+@keyframes nl-fade-up {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+@keyframes nl-pulse {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.35;
+  }
+}
+@keyframes nl-pan {
+  to {
+    background-position: 200% 0;
+  }
+}
+@keyframes nl-drift-a {
+  from {
+    transform: translate3d(0, 0, 0) scale(1);
+  }
+  to {
+    transform: translate3d(6vw, 8vh, 0) scale(1.15);
+  }
+}
+@keyframes nl-drift-b {
+  from {
+    transform: translate3d(0, 0, 0) scale(1.1);
+  }
+  to {
+    transform: translate3d(-8vw, 6vh, 0) scale(0.95);
+  }
+}
+@keyframes nl-drift-c {
+  from {
+    transform: translate3d(0, 0, 0) scale(0.9);
+  }
+  to {
+    transform: translate3d(4vw, -6vh, 0) scale(1.2);
+  }
+}
+@keyframes nl-shimmer {
+  from {
+    transform: translateX(-120%);
+  }
+  to {
+    transform: translateX(120%);
+  }
+}
+.animate-in {
+  animation: nl-fade-up 0.5s var(--ease-out-quint) both;
+}
+.animate-pulse-soft {
+  animation: nl-pulse 1.6s ease-in-out infinite;
+}
+/* Loading shimmer sweep for skeletons / progress rails */
+.nl-shimmer {
+  position: relative;
+  overflow: hidden;
+}
+.nl-shimmer::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(255, 255, 255, 0.08),
+    transparent
+  );
+  animation: nl-shimmer 1.8s var(--ease-in-out-strong) infinite;
+}
+
+/* ── Respect reduced motion ────────────────────────────────────────────── */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+    scroll-behavior: auto !important;
+  }
+  .nl-aurora,
+  .nl-gradient-text {
+    animation: none !important;
+  }
+  .nl-brain-canvas {
+    transition: none !important;
+  }
+}

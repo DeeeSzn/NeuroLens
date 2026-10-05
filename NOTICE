@@ -1,0 +1,10 @@
+NeuroLens
+Copyright 2026 NeuroLens contributors.
+
+Original first-party application code is licensed under the Apache License,
+Version 2.0. See LICENSE.
+
+This license grant does not cover the vendored tribev2 source, external model
+weights, atlas data, or brain meshes. Those retain their own licenses and terms.
+TRIBE v2 is copyright Meta Platforms, Inc. and affiliates and licensed under
+CC-BY-NC-4.0. See tribev2/LICENSE and THIRD_PARTY_NOTICES.md.

@@ -1,0 +1,12 @@
+{
+  "name": "neurolens",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "dev": "concurrently --kill-others --names \"redis,api,worker,ui\" --prefix-colors \"cyan,green,yellow,magenta\" \"redis-server --bind 127.0.0.1 --protected-mode yes --save '' --appendonly no\" \"cd backend && ./venv/bin/uvicorn app.main:app --host 127.0.0.1 --no-proxy-headers --port 8000 --reload\" \"cd backend && ./venv/bin/celery -A app.celery_app:celery_app worker --loglevel=info --pool=solo\" \"cd frontend && npm run dev\"",
+    "release:check": "python3 scripts/prepare_release.py"
+  },
+  "devDependencies": {
+    "concurrently": "^9.1.2"
+  }
+}

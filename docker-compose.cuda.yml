@@ -1,0 +1,11 @@
+services:
+  worker:
+    environment:
+      NEUROLENS_TRIBE_DEVICE: cuda
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: 1
+              capabilities: [gpu]

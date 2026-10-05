@@ -1,0 +1,58 @@
+services:
+  redis:
+    image: redis:7-alpine
+    command: redis-server --save "" --appendonly no
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+
+  backend:
+    build:
+      context: .
+      dockerfile: backend/Dockerfile
+    ports:
+      - "127.0.0.1:8000:8000"
+    environment: &backend-environment
+      NEUROLENS_REDIS_URL: redis://redis:6379/0
+      NEUROLENS_CELERY_BROKER_URL: redis://redis:6379/0
+      NEUROLENS_CELERY_RESULT_BACKEND: redis://redis:6379/1
+      NEUROLENS_TRIBE_DEVICE: cpu
+      NEUROLENS_STATIC_DIR: /data/assets
+      NEUROLENS_UPLOAD_DIR: /data/uploads
+      NEUROLENS_RESULTS_DIR: /data/results
+      NEUROLENS_DATABASE_URL: sqlite+aiosqlite:////data/neurolens.db
+      NEUROLENS_TRIBE_CACHE_DIR: /data/cache/tribe
+      NEUROLENS_INSIGHT_REFERENCES_DIR: /data/references
+    depends_on:
+      redis:
+        condition: service_healthy
+    volumes:
+      - state:/data
+    command: uvicorn app.main:app --host 0.0.0.0 --no-proxy-headers --port 8000
+
+  worker:
+    build:
+      context: .
+      dockerfile: backend/Dockerfile
+    environment: *backend-environment
+    depends_on:
+      redis:
+        condition: service_healthy
+    volumes:
+      - state:/data
+    command: celery -A app.celery_app:celery_app worker --loglevel=info --pool=solo
+
+  frontend:
+    build:
+      context: ./frontend
+      args:
+        NEUROLENS_BACKEND_URL: http://backend:8000
+    ports:
+      - "127.0.0.1:3000:3000"
+    depends_on:
+      - backend
+
+volumes:
+  state:

@@ -1,0 +1,10 @@
+-r requirements.txt
+-e ../tribev2[plotting]
+
+# The vendor requires torch <2.7. WhisperX 3.8 requires torch 2.8 and conflicts.
+torch==2.6.0
+torchaudio==2.6.0
+torchvision==0.21.0
+whisperx==3.3.1
+transformers==4.57.6
+accelerate>=0.34

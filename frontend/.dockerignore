@@ -1,0 +1,17 @@
+**
+!package.json
+!package-lock.json
+!next.config.js
+!next-env.d.ts
+!tsconfig.json
+!postcss.config.*
+!.eslintrc.json
+!src/
+!src/**
+!public/
+!public/.gitkeep
+**/.env*
+**/[Aa][Cc][Tt][Ii][Vv][Ii][Tt][Yy]*.[Mm][Dd]
+**/[Aa][Gg][Ee][Nn][Tt][Ss]*.[Mm][Dd]
+**/[Ee][Mm][Oo][Tt][Ii][Oo][Nn][Ss]*.[Mm][Dd]
+**/[Ww][Oo][Rr][Kk]*.[Mm][Dd]

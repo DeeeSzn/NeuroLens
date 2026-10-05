@@ -1,0 +1,19 @@
+fastapi==0.142.2
+starlette==1.3.1
+anyio>=4.14.2,<5
+uvicorn[standard]==0.34.0
+celery[redis]==5.4.0
+redis==5.2.1
+python-multipart==0.0.31
+pydantic==2.10.4
+pydantic-settings==2.14.2
+sqlalchemy==2.0.36
+aiosqlite==0.20.0
+greenlet==3.3.2
+aiofiles==24.1.0
+numpy==2.2.6
+nibabel==5.4.2
+psutil>=6.0,<8
+pytest==9.0.3
+
+# Full model setup is in requirements-runtime.txt. See the root README.
